@@ -31,6 +31,7 @@ type GitHubRepository = {
 	private: boolean,
 	owner: GitHubUser,
 	html_url: string,
+	branches_url: string,
 	url: string,
 };
 
@@ -63,6 +64,7 @@ type GitHubEventPush = {
 	repository: GitHubRepository,
 	commits: GitHubCommit[],
 	compare: string,
+	forced: boolean,
 };
 
 const githubEventFormatters = {
@@ -71,9 +73,11 @@ const githubEventFormatters = {
 GitHub Zen: ${ping.zen}`;
 	},
 	'push': (push: GitHubEventPush): string => {
+		const branch = push.ref.replace('refs/heads/', '');
 		return `[${push.sender.login}](${push.sender.html_url}): 
-[[${push.repository.name}:${push.ref.replace('refs/heads/', '')}] ${push.commits.length} new commits](${push.compare})
-${push.commits.map(commit => `\`${commit.id.slice(0, 7)}\` ${commit.message} - ${commit.author.username}`).join('\n')}`;
+[${push.commits.length} new commit${push.commits.length == 1 ? "" : "s"}](${push.compare}) ${push.forced ? "force-" : ""}pushed to [\`${branch}\`](${push.repository.branches_url.replace('{/branch}', '/' + branch)})
+${push.commits.map(commit => `\`${commit.id.slice(0, 7)}\` ${commit.message} - ${commit.author.username}`).join('\n')}
+[_${push.repository.full_name}_](${push.repository.html_url})`;
 	},
 };
 
@@ -268,6 +272,7 @@ class GitHubBot {
 		return {
 			parse_mode: "Markdown",
 			text,
+			disable_web_page_preview: true,
 		};
 	}
 
