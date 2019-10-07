@@ -74,10 +74,10 @@ GitHub Zen: ${ping.zen}`;
 	},
 	'push': (push: GitHubEventPush): string => {
 		const branch = push.ref.replace('refs/heads/', '');
-		return `[${push.sender.login}](${push.sender.html_url}): 
-[${push.commits.length} new commit${push.commits.length == 1 ? "" : "s"}](${push.compare}) ${push.forced ? "force-" : ""}pushed to [\`${branch}\`](${push.repository.branches_url.replace('{/branch}', '/' + branch)})
-${push.commits.map(commit => `\`${commit.id.slice(0, 7)}\` ${commit.message} - ${commit.author.username}`).join('\n')}
-[_${push.repository.full_name}_](${push.repository.html_url})`;
+		return `👤 [${push.sender.login}](${push.sender.html_url}): 
+[${push.commits.length} new commit${push.commits.length == 1 ? "" : "s"}](${push.compare}) ${push.forced ? "force-" : ""}pushed to \`${branch}\` [🔗](${push.repository.branches_url.replace('{/branch}', '/' + branch)})
+${push.commits.map(commit => `\`${commit.id.slice(0, 7)}\` ${commit.message} [🔗](${commit.url}) - ${commit.author.username}`).join('\n')}
+_${push.repository.full_name.replace('_', '_____')}_ [🏠](${push.repository.html_url})`;
 	},
 };
 
